@@ -17,6 +17,20 @@ function main(src, dest) {
   async function recurse(filepath) {
     const dom = await JSDOM.fromFile(filepath)
     const document = dom.window.document;
+
+    function remove(query) {
+      var el;
+      while(1) {
+        el = document.querySelector(query);
+        if (!el) break;
+        el.parentNode.removeChild(el);
+      }
+    };
+
+    remove('script');
+
+    // <a>
+
     const anchors = document.getElementsByTagName('a');
 
     for (var i=0, a; a=anchors[i]; i++) {
