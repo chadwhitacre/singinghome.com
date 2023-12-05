@@ -30,24 +30,42 @@ function main(src, dest) {
     remove('script');
 
     // <a>
-
     const anchors = document.getElementsByTagName('a');
-
     for (var i=0, a; a=anchors[i]; i++) {
       a.removeAttribute('target');
       if (a.href.startsWith(src)) {
-        download(a.href);
-        a.href = '/' + a.href.slice(src.length);
+        a.href = await download(a.href);
       }
     }
 
+    // <link>
+    remove('link[rel="webmention"]');
+    const links = document.getElementsByTagName('link');
+    for (var i=0, link; link=links[i]; i++) {
+      if (link.href.startsWith('file:///')) {
+        link.href = src + link.href.slice('file:///'.length);
+      }
+      link.href = await download(link.href);
+    }
+
     var html = dom.serialize();
-    html = await prettier.format(html, {parser: 'html'});
+    try {
+      html = await prettier.format(html, {parser: 'html'});
+    } catch {
+      console.error('failed to prettify', filepath);
+    }
     await fs.writeFile(filepath, html, () => {});
   }
 
-  async function download(url) {
-    var filepath = dest + new URL(url).pathname;
+  async function download(urlString) {
+    var url = new URL(urlString);
+
+    if (!['singinghome.com', 'buttondown-attachments.s3.us-west-2.amazonaws.com'].includes(url.hostname)) {
+      return urlString;
+    }
+
+    var urlpath =  url.pathname;
+    var filepath = dest + urlpath;
 
     if (filepath.endsWith('/')) {
       var filepath = filepath + 'index.html';
@@ -56,15 +74,18 @@ function main(src, dest) {
     if (!fs.existsSync(filepath)) {
       fs.mkdirSync(path.dirname(filepath), { recursive: true });
       var file = fs.createWriteStream(filepath);
-      console.log('downloading', url);
+      console.log('downloading', url.href);
       https.get(url, function(response) {
         response.pipe(file);
         file.on('finish', function() {
           file.close();
-          recurse(filepath);
+          if (filepath.endsWith('.html')) {
+            recurse(filepath);
+          }
         });
       });
     }
+    return urlpath;
   }
 
   download(src);
