@@ -96,5 +96,7 @@ function main(src, dest) {
 }
 
 const root = 'docs';
+fs.renameSync('docs/CNAME', 'CNAME')
 fs.rmSync(root, { recursive: true, force: true });
 main('https://singinghome.com/', root);
+fs.renameSync('CNAME', 'docs/CNAME')
