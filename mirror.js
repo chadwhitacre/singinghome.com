@@ -28,6 +28,7 @@ function main(src, dest) {
     };
 
     remove('script');
+    document.documentElement.style.setProperty("--tint-color", '#3b82f6');
 
     // <a>
     const anchors = document.getElementsByTagName('a');
@@ -40,6 +41,9 @@ function main(src, dest) {
 
     // <link>
     remove('link[rel="webmention"]');
+    remove('link[rel="alternate"]');
+    remove('link[href^="/static/form-"]');
+
     const links = document.getElementsByTagName('link');
     for (var i=0, link; link=links[i]; i++) {
       if (link.href.startsWith('file:///')) {
