@@ -7,6 +7,8 @@ const prettier = require('prettier');
 
 const { JSDOM } = jsdom;
 
+const KEEPERS = ['singinghome.com', 'buttondown-attachments.s3.us-west-2.amazonaws.com', 'assets.buttondown.email']
+
 function reverse(s) {
   return s.split('').reverse().join('');
 }
@@ -52,6 +54,15 @@ function main(src, dest) {
       link.href = await download(link.href);
     }
 
+    // <img>
+    const images = document.getElementsByTagName('img');
+    for (var i=0, image; image=images[i]; i++) {
+      image.src = await download(image.src);
+    }
+
+
+    // finish
+
     var html = dom.serialize();
     try {
       html = await prettier.format(html, {parser: 'html'});
@@ -64,7 +75,7 @@ function main(src, dest) {
   async function download(urlString) {
     var url = new URL(urlString);
 
-    if (!['singinghome.com', 'buttondown-attachments.s3.us-west-2.amazonaws.com'].includes(url.hostname)) {
+    if (!KEEPERS.includes(url.hostname)) {
       return urlString;
     }
 
