@@ -51,6 +51,7 @@ function main(src, dest) {
     remove('link[rel="alternate"]');
     remove('link[href^="/static/form-"]');
     remove('link[rel="preconnect"]');
+    remove('link[href^="https://fonts.google"]'); // not actually used afaict
 
     const links = document.getElementsByTagName('link');
     for (var i=0, link; link=links[i]; i++) {
