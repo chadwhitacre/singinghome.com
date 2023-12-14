@@ -7,7 +7,12 @@ const prettier = require('prettier');
 
 const { JSDOM } = jsdom;
 
-const KEEPERS = ['singinghome.com', 'buttondown-attachments.s3.us-west-2.amazonaws.com', 'assets.buttondown.email']
+const KEEPERS = [
+  'assets.buttondown.email',
+  'buttondown-attachments.s3.us-west-2.amazonaws.com',
+  'buttondown.imgix.net',
+  'singinghome.com',
+]
 
 function reverse(s) {
   return s.split('').reverse().join('');
@@ -45,6 +50,7 @@ function main(src, dest) {
     remove('link[rel="webmention"]');
     remove('link[rel="alternate"]');
     remove('link[href^="/static/form-"]');
+    remove('link[rel="preconnect"]');
 
     const links = document.getElementsByTagName('link');
     for (var i=0, link; link=links[i]; i++) {
