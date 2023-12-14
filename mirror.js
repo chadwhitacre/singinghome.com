@@ -48,6 +48,8 @@ function main(src, dest) {
 
     const links = document.getElementsByTagName('link');
     for (var i=0, link; link=links[i]; i++) {
+      if (link.rel === 'canonical')
+        continue;
       if (link.href.startsWith('file:///')) {
         link.href = src + link.href.slice('file:///'.length);
       }
@@ -60,6 +62,13 @@ function main(src, dest) {
       image.src = await download(image.src);
     }
 
+    // <meta>
+    let meta
+    meta = document.querySelector('meta[name="twitter:image"]');
+    meta.content = await download(meta.content);
+
+    meta = document.querySelector('meta[property="og:image"]');
+    meta.content = await download(meta.content);
 
     // finish
 
@@ -76,6 +85,7 @@ function main(src, dest) {
     var url = new URL(urlString);
 
     if (!KEEPERS.includes(url.hostname)) {
+      console.log('  skipping', url.hostname);
       return urlString;
     }
 
