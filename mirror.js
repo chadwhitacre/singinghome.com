@@ -167,6 +167,8 @@ function main(src, dest) {
         <br>
         <br>
         <a href="/">Home</a>
+        &nbsp;✚&nbsp;
+        <a href="/archive/">Archive</a>
         <br>
         <br>
       `;
