@@ -47,11 +47,12 @@ function main(src, dest) {
     }
 
     // <link>
-    remove('link[rel="webmention"]');
-    remove('link[rel="alternate"]');
     remove('link[href^="/static/form-"]');
-    remove('link[rel="preconnect"]');
     remove('link[href^="https://fonts.google"]'); // not actually used afaict
+    remove('link[rel="alternate"]');
+    remove('link[rel="manifest"]');
+    remove('link[rel="preconnect"]');
+    remove('link[rel="webmention"]');
 
     const links = document.getElementsByTagName('link');
     for (var i=0, link; link=links[i]; i++) {
@@ -78,7 +79,6 @@ function main(src, dest) {
     meta.content = await download(meta.content);
 
     // finish
-
     var html = dom.serialize();
     try {
       html = await prettier.format(html, {parser: 'html'});
