@@ -78,6 +78,103 @@ function main(src, dest) {
     meta = document.querySelector('meta[property="og:image"]');
     meta.content = await download(meta.content);
 
+    // modify pages
+    remove('.subscribe-page-extras');
+    remove('.email-detail__header a');
+    remove('#subscribe-form');
+    remove('.footer');
+    remove('.email-detail__footer');
+    remove('.email-teaser');
+
+    function createHeader() {
+      div = document.createElement('div');
+      div.className = 'app page--subscribe';
+      div.innerHTML = `
+        <h1>
+          <img
+            class="newsletter-icon"
+            src="/images/29d3e2e8-4d30-4324-903e-523d54a61f9c.png"
+          />
+
+          Singing Home
+        </h1>
+
+        <div class="newsletter-description">
+          <p></p>
+          <center>
+            <p><i>Celebrating the life of Rod Whitacre</i></p>
+          </center>
+          <p></p>
+          <p></p>
+          <p style="text-align: center;">
+            <a href="/">Home</a>
+            &nbsp;✚&nbsp;
+            <a href="/archive/">Archive</a>
+            <br>
+            <br>
+          </p>
+        </div>
+
+        <style>
+          .email-detail__header {
+            border-bottom: 0;
+            margin: 0;
+            padding: 0;
+          }
+          .email-detail__header h1 {
+            font-size: 2em;
+          }
+        </style>
+      `;
+      return div;
+    }
+
+    if (filepath.endsWith('/archive/index.html')) {
+      remove('svg');
+      var metadata = document.querySelectorAll('.email-metadata')
+      for (var i=0, md; md=metadata[i]; i++) {
+        md.innerHTML = md.querySelector('div div:nth-child(2)').innerHTML.trim();
+        md.classList.remove('email-metadata');
+      }
+
+      var style = document.createElement('style');
+      style.innerHTML = `
+        .email-list {
+          margin-bottom: 6em;
+        }
+        .email {
+          margin-bottom: 0;
+        }
+      `;
+
+      var list = document.querySelector('.email-list');
+      var items = list.querySelectorAll('.email');
+      for (var i=0, item; item=items[i]; i++) {
+        list.prepend(item);
+      }
+      list.prepend(style)
+
+      remove('.public-archive__header');
+      document.querySelector('.app-container').prepend(createHeader());
+    }
+
+    var emailBody = document.querySelector('.email-detail__body')
+    if (emailBody) {
+      var p = document.createElement('p');
+      p.style = "text-align: center;";
+      p.innerHTML = `
+        <br>
+        <br>
+        <br>
+        <a href="/">Home</a>
+        <br>
+        <br>
+      `;
+      emailBody.append(p);
+
+      document.querySelector('.app-container').prepend(createHeader());
+    }
+
     // finish
     var html = dom.serialize();
     try {
